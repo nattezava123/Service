@@ -13,7 +13,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 🌟 ป้องกัน Session Storage พัง
 let currentUser = null;
 try {
     const stored = sessionStorage.getItem('hr_currentUser');
@@ -31,14 +30,10 @@ window.allUsers = [];
 window.currentTimePage = 1;
 window.rowsPerPage = 10;
 
-// ==========================================
-// 🌟 1. ฟังก์ชันคำนวณเวลาแบบมาตรฐาน HR (ปัดเศษ 30 นาที)
-// ==========================================
 window.calculateHRWorkHours = (timeInStr, timeOutStr) => {
     if (!timeInStr || !timeOutStr || timeInStr === '-' || timeOutStr === '-') {
         return { normal: 0, ot: 0 };
     }
-    
     try {
         const [inH, inM] = timeInStr.split(':').map(Number);
         const [outH, outM] = timeOutStr.split(':').map(Number);
@@ -67,9 +62,96 @@ window.calculateHRWorkHours = (timeInStr, timeOutStr) => {
     }
 };
 
-// ==========================================
-// 🌟 ฟังก์ชันจัดการวันที่
-// ==========================================
+window.toggleLegalLeaveMode = () => {
+    const standardBox = document.getElementById('standardLeaveContainer');
+    const legalBox = document.getElementById('legalLeaveContainer');
+    const typeSelect = document.getElementById('leaveType');
+    const legalSelect = document.getElementById('leaveTypeLegal');
+    
+    const stdStats = document.getElementById('standardLeaveStats');
+    const legalStats = document.getElementById('legalLeaveStats');
+    const toggleBtn = document.getElementById('btnToggleLegalMode');
+    
+    if (standardBox.style.display !== 'none') {
+        standardBox.style.display = 'none'; 
+        legalBox.style.display = 'block';
+        
+        if (stdStats) stdStats.classList.add('d-none');
+        if (legalStats) legalStats.classList.remove('d-none');
+        
+        if (toggleBtn) {
+            toggleBtn.innerHTML = '<i class="bi bi-arrow-left-circle me-1"></i> กลับไปฟอร์มลาปกติ';
+            toggleBtn.classList.replace('btn-outline-info', 'btn-info');
+            toggleBtn.classList.add('text-white');
+        }
+        
+        typeSelect.removeAttribute('required'); 
+        typeSelect.value = ''; 
+        legalSelect.setAttribute('required', 'required');
+        typeSelect.id = 'leaveType_disabled'; 
+        legalSelect.id = 'leaveType';
+    } else {
+        legalBox.style.display = 'none'; 
+        standardBox.style.display = 'block';
+        
+        if (legalStats) legalStats.classList.add('d-none');
+        if (stdStats) stdStats.classList.remove('d-none');
+        
+        if (toggleBtn) {
+            toggleBtn.innerHTML = '<i class="bi bi-info-circle me-1"></i> แบบฟอร์มลาตามกฎหมาย';
+            toggleBtn.classList.replace('btn-info', 'btn-outline-info');
+            toggleBtn.classList.remove('text-white');
+        }
+
+        legalSelect.removeAttribute('required'); 
+        legalSelect.value = ''; 
+        typeSelect.setAttribute('required', 'required');
+        legalSelect.id = 'leaveTypeLegal'; 
+        typeSelect.id = 'leaveType';
+    }
+    if(typeof window.toggleOtherLeaveType === 'function') window.toggleOtherLeaveType('');
+};
+
+window.calculateLeaveDaysPreview = () => {
+    const startInput = document.getElementById('leaveStartDate');
+    const endInput = document.getElementById('leaveEndDate');
+    const summaryBox = document.getElementById('leaveSummaryBox');
+    const daysText = document.getElementById('leaveDaysCalc');
+    const rangeText = document.getElementById('leaveDateRangeText');
+
+    if (!startInput || !summaryBox || !daysText || !rangeText) return;
+
+    const startVal = startInput.value;
+    const endVal = (endInput && endInput.value) ? endInput.value : startVal;
+
+    if (!startVal) {
+        summaryBox.style.display = 'none';
+        return;
+    }
+
+    const start = new Date(startVal);
+    const end = new Date(endVal);
+
+    if (end < start) {
+        summaryBox.style.display = 'none';
+        return;
+    }
+
+    const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+    daysText.innerText = diffDays;
+
+    const startDisplay = window.formatDateShort(startVal);
+    const endDisplay = window.formatDateShort(endVal);
+
+    if (startVal === endVal) {
+        rangeText.innerText = startDisplay;
+    } else {
+        rangeText.innerText = `${startDisplay} ถึง ${endDisplay}`;
+    }
+
+    summaryBox.style.display = 'block';
+};
+
 window.formatDateShort = (dateStr, fallbackTimestamp = null, fallbackDateStr = null) => {
     try {
         let d = null;
@@ -126,9 +208,6 @@ const getSafeTodayString = () => {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
-// ==========================================
-// UI Helpers
-// ==========================================
 window.showSwal = (title, text, icon = 'success') => {
     if (typeof Swal !== 'undefined') { 
         Swal.fire({ title, text, icon, confirmButtonText: 'ตกลง', confirmButtonColor: '#2563eb', timer: icon === 'success' ? 2500 : undefined, customClass: { popup: 'rounded-4' } });
@@ -178,9 +257,6 @@ window.checkAuthStatus = (reqRole) => {
     return true;
 };
 
-// ==========================================
-// 🌟 ระบบ Login / Logout
-// ==========================================
 window.handleLogin = async (e) => {
     if(e) e.preventDefault();
     const btn = document.getElementById('btnLoginSubmit');
@@ -231,9 +307,6 @@ window.logout = (e) => {
     }
 };
 
-// ==========================================
-// ส่วนแนบไฟล์ต่างๆ
-// ==========================================
 window.previewCertImage = (leaveId) => {
     const l = window.allLeaves.find(x => x.id === leaveId);
     if (!l || !l.certUrl) return window.showSwal('ไม่พบไฟล์', 'ไม่มีไฟล์เอกสารแนบในรายการนี้', 'warning');
@@ -269,11 +342,17 @@ const compressImage = (file) => {
 };
 
 const getBase64 = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
+    const reader = new FileReader(); reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
 });
+
+window.toggleOtherLeaveType = (val) => {
+    const div = document.getElementById('leaveTypeOtherDiv');
+    const inp = document.getElementById('leaveTypeOther');
+    if(!div || !inp) return;
+    if(val === 'other') { div.style.display = 'block'; inp.required = true;
+    } else { div.style.display = 'none'; inp.required = false; inp.value = ''; }
+};
 
 window.handleStampTime = async () => {
     const loc = document.getElementById('workLocation').value;
@@ -311,6 +390,7 @@ window.handleStampTime = async () => {
                 if(btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังบันทึก...'; }
                 try {
                     const hrCalc = window.calculateHRWorkHours(recordData.timeIn, currentTime);
+
                     await updateDoc(doc(db, "workRecords", recordDoc.id), { timeOut: currentTime, workHours: parseFloat(hrCalc.normal.toFixed(1)), otHours: parseFloat(hrCalc.ot.toFixed(1)), details: det, location: loc, status: "Completed" });
                     Swal.fire({ title: 'บันทึกเวลาสำเร็จ', html: `เวลาทำงาน: <b>${hrCalc.normal.toFixed(1)}</b> ชม.<br>OT: <b>${hrCalc.ot.toFixed(1)}</b> ชม.`, icon: 'success', timer: 3000, showConfirmButton: false, allowOutsideClick: false });
                     await refreshUI();
@@ -334,7 +414,9 @@ window.saveDailyDetails = async (e) => {
 
 window.handleLeaveSubmit = async (e) => {
     e.preventDefault();
-    const type = document.getElementById('leaveType').value;
+    const isLegalMode = document.getElementById('standardLeaveContainer').style.display === 'none';
+    const type = isLegalMode ? document.getElementById('leaveTypeLegal').value : document.getElementById('leaveType').value;
+    
     const typeOther = document.getElementById('leaveTypeOther') ? document.getElementById('leaveTypeOther').value : '';
     const leaveTime = document.getElementById('leaveTime') ? document.getElementById('leaveTime').value : 'เต็มวัน';
     
@@ -343,7 +425,7 @@ window.handleLeaveSubmit = async (e) => {
     const reason = document.getElementById('leaveReason').value;
     const fileInput = document.getElementById('leaveCertFile');
     
-    if(!type || !startDate) return window.showSwal('ข้อมูลไม่ครบ', 'กรุณาระบุประเภทและวันที่', 'warning');
+    if(!type || !startDate) return window.showSwal('ข้อมูลไม่ครบ', 'กรุณาระบุประเภทและวันที่ให้ครบถ้วน', 'warning');
     if(type === 'other' && !typeOther.trim()) return window.showSwal('ข้อมูลไม่ครบ', 'กรุณาระบุประเภทการลาอื่นๆ', 'warning');
 
     const days = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)) + 1;
@@ -378,6 +460,9 @@ window.handleLeaveSubmit = async (e) => {
         e.target.reset(); 
         if(typeof window.toggleOtherLeaveType === 'function') window.toggleOtherLeaveType('');
         
+        const summaryBox = document.getElementById('leaveSummaryBox');
+        if (summaryBox) summaryBox.style.display = 'none';
+
         window.showSwal('ยื่นคำขอสำเร็จ', 'ระบบได้รับคำขออนุมัติเรียบร้อยแล้ว', 'success'); 
         await refreshUI();
         const historyTabBtn = document.getElementById('tab-leave-history-btn'); 
@@ -471,90 +556,6 @@ window.viewLeaveDetail = async (leaveId) => {
     } catch (e) { console.error(e); }
 };
 
-window.handleAddEmployee = async (e) => {
-    e.preventDefault();
-    const newId = document.getElementById('regId').value;
-    const idCard = document.getElementById('regIdCard').value;
-    const docSnap = await getDoc(doc(db, "users", newId));
-    if(docSnap.exists()) return window.showSwal('ผิดพลาด', 'รหัสพนักงานซ้ำ', 'error');
-    const autoPassword = idCard.slice(-4); 
-    const initialQuota = { sick: 30, personal: 3, annual: 6, compensatory: 0, maternity: 90, ordination: 15, military: 30 };
-    await setDoc(doc(db, "users", newId), { 
-        uid: newId, idCard: idCard, password: autoPassword, Name: document.getElementById('regName').value, SurName: '', role: document.getElementById('regRole').value, 
-        leaveBalances: initialQuota, leaveTotal: initialQuota 
-    });
-    document.getElementById('addEmployeeForm').reset(); window.showSwal('สำเร็จ!', `สร้างบัญชีเรียบร้อย\nรหัสผ่านคือ: ${autoPassword}`, 'success'); refreshUI();
-};
-
-window.deleteEmployee = (id) => { 
-    if(id === 'admin') return window.showSwal('ปฏิเสธ', 'ไม่สามารถลบ Admin ได้', 'error'); 
-    Swal.fire({ title: 'ยืนยันการลบ?', text: 'ข้อมูลจะถูกลบถาวร', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'ลบข้อมูล' }).then(async (result) => { if(result.isConfirmed) { await deleteDoc(doc(db, "users", id)); refreshUI(); } });
-};
-
-window.currentEditEmpId = null;
-window.openEditEmployeeModal = async (uid) => {
-    try {
-        if (!uid || uid === 'undefined') return window.showSwal('ข้อผิดพลาด', 'รหัสพนักงานไม่ถูกต้อง', 'error');
-        const userDoc = await getDoc(doc(db, "users", uid));
-        if (userDoc.exists()) {
-            const u = userDoc.data();
-            window.currentEditEmpId = uid;
-            document.getElementById('editEmpIdDisplay').value = u.uid || uid; document.getElementById('editEmpIdCardInput').value = u.idCard || ''; document.getElementById('editEmpNameInput').value = `${u.Name || ''} ${u.SurName || ''}`.trim(); document.getElementById('editEmpRoleInput').value = u.role || 'employee';
-            bootstrap.Modal.getOrCreateInstance(document.getElementById('editEmpModal')).show();
-        }
-    } catch (error) { window.showSwal('ข้อผิดพลาด', 'ไม่สามารถเข้าถึงข้อมูลได้', 'error'); }
-};
-
-window.saveEditEmployee = async () => {
-    const uid = window.currentEditEmpId;
-    if (!uid) return;
-    const newIdCard = document.getElementById('editEmpIdCardInput').value.trim(); const fullName = document.getElementById('editEmpNameInput').value.trim(); const newRole = document.getElementById('editEmpRoleInput').value;
-    if (!fullName) return window.showSwal('ข้อผิดพลาด', 'กรุณาระบุชื่อพนักงาน', 'warning');
-    const nameParts = fullName.split(' '); const newName = nameParts[0]; const newSurName = nameParts.slice(1).join(' ');
-    const btn = document.getElementById('btnSaveEdit'); if(btn) { btn.disabled = true; btn.innerHTML = 'กำลังบันทึก...'; }
-    try {
-        const userDoc = await getDoc(doc(db, "users", uid)); const u = userDoc.data();
-        await updateDoc(doc(db, "users", uid), { idCard: newIdCard, password: newIdCard ? newIdCard.slice(-4) : u.password, Name: newName, SurName: newSurName, role: newRole });
-        bootstrap.Modal.getInstance(document.getElementById('editEmpModal')).hide(); window.showSwal('สำเร็จ', 'อัปเดตข้อมูลพนักงานเรียบร้อย', 'success'); refreshUI();
-    } catch (error) { window.showSwal('ข้อผิดพลาด', 'บันทึกข้อมูลไม่สำเร็จ', 'error'); } finally { if(btn) { btn.disabled = false; btn.innerHTML = 'บันทึกการเปลี่ยนแปลง'; } }
-};
-
-window.currentEditLeaveBalId = null;
-window.openEditLeaveBalanceModal = async (uid) => {
-    try {
-        if (!uid || uid === 'undefined') return window.showSwal('ข้อผิดพลาด', 'รหัสพนักงานไม่ถูกต้อง', 'error');
-        const userDoc = await getDoc(doc(db, "users", uid));
-        if (userDoc.exists()) {
-            const u = userDoc.data();
-            window.currentEditLeaveBalId = uid;
-            document.getElementById('leaveBalEmpName').innerText = `${u.uid || uid} : ${u.Name || ''} ${u.SurName || ''}`;
-            const total = u.leaveTotal || { sick: 30, personal: 3, annual: 6, compensatory: 0, maternity: 90, ordination: 15, military: 30 };
-            document.getElementById('editBalSick').value = total.sick || 0; document.getElementById('editBalPers').value = total.personal || 0; document.getElementById('editBalAnn').value = total.annual || 0; document.getElementById('editBalComp').value = total.compensatory || 0; document.getElementById('editBalMat').value = total.maternity || 0; document.getElementById('editBalOrd').value = total.ordination || 0; document.getElementById('editBalMil').value = total.military || 0;
-            bootstrap.Modal.getOrCreateInstance(document.getElementById('editLeaveBalanceModal')).show();
-        }
-    } catch (error) { window.showSwal('ข้อผิดพลาด', 'ไม่สามารถเข้าถึงข้อมูลได้', 'error'); }
-};
-
-window.saveLeaveBalance = async () => {
-    const uid = window.currentEditLeaveBalId;
-    if (!uid) return;
-    const btn = document.getElementById('btnSaveLeaveBal'); if(btn) { btn.disabled = true; btn.innerHTML = 'กำลังบันทึก...'; }
-    try {
-        const userDoc = await getDoc(doc(db, "users", uid)); const u = userDoc.data();
-        const oldTotal = u.leaveTotal || { sick: 30, personal: 3, annual: 6, compensatory: 0, maternity: 90, ordination: 15, military: 30 };
-        const oldBalances = u.leaveBalances || { sick: 30, personal: 3, annual: 6, compensatory: 0, maternity: 90, ordination: 15, military: 30 };
-        const newTotal = { sick: parseInt(document.getElementById('editBalSick').value) || 0, personal: parseInt(document.getElementById('editBalPers').value) || 0, annual: parseInt(document.getElementById('editBalAnn').value) || 0, compensatory: parseInt(document.getElementById('editBalComp').value) || 0, maternity: parseInt(document.getElementById('editBalMat').value) || 0, ordination: parseInt(document.getElementById('editBalOrd').value) || 0, military: parseInt(document.getElementById('editBalMil').value) || 0 };
-        const newBalances = {};
-        for(let key in newTotal) {
-            let usedDays = (oldTotal[key] || 0) - (oldBalances[key] || 0); 
-            if(usedDays < 0) usedDays = 0;
-            newBalances[key] = newTotal[key] - usedDays; 
-        }
-        await updateDoc(doc(db, "users", uid), { leaveTotal: newTotal, leaveBalances: newBalances });
-        bootstrap.Modal.getInstance(document.getElementById('editLeaveBalanceModal')).hide(); window.showSwal('สำเร็จ', 'อัปเดตสิทธิ์การลาเรียบร้อย', 'success'); refreshUI();
-    } catch (error) { window.showSwal('ข้อผิดพลาด', 'บันทึกข้อมูลไม่สำเร็จ', 'error'); } finally { if(btn) { btn.disabled = false; btn.innerHTML = 'บันทึกโควตาสิทธิ์การลา'; } }
-};
-
 window.changeRowsPerPage = () => {
     const select = document.getElementById('timeRowsPerPage');
     if(select) window.rowsPerPage = parseInt(select.value);
@@ -604,7 +605,7 @@ window.renderTimeHistoryPage = (page = null) => {
     if(document.getElementById('btnNextTime')) document.getElementById('btnNextTime').disabled = window.currentTimePage === totalPages;
 
     tbody.innerHTML = '';
-    if (paginated.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-muted py-4">ไม่พบประวัติการลงเวลา</td></tr>'; return; }
+    if (paginated.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-muted py-4">ไม่พบประวัติการลงเวลา</td></tr>'; return; }
 
     paginated.forEach(r => {
         const wHr = r.calcW.toFixed(1);
@@ -619,11 +620,8 @@ window.renderTimeHistoryPage = (page = null) => {
 
         const displayDate = window.formatDateShort(r.workDate, r.timestamp);
 
-        let actionBtns = `<button class="btn btn-sm btn-outline-info me-1" onclick="window.viewWorkDetails('${r.id}')" title="ดูรายละเอียดงาน"><i class="bi bi-search"></i></button>`;
-        if (r.correctionReq && r.correctionReq.status === 'รอพิจารณา') { actionBtns += `<span class="badge bg-warning-subtle text-warning ms-1">รออนุมัติแก้เวลา</span>`; } 
-        else { const safeOut = r.timeOut ? r.timeOut : ''; actionBtns += `<button class="btn btn-sm btn-outline-danger" onclick="window.requestTimeCorrection('${r.id}', '${r.workDate}', '${r.timeIn||''}', '${safeOut}')" title="ขอแก้ไขเวลา"><i class="bi bi-pencil-square"></i></button>`; }
-
-        tbody.innerHTML += `<tr><td>${displayDate}</td><td>${r.location || '-'}${auditIcon}</td><td class="${tInClass}">${r.timeIn || '-'}</td><td class="fw-medium">${tOut}</td><td class="fw-bold text-dark">${wHr}</td><td class="fw-bold text-primary">${oHr}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
+        // 🌟 ลบคอลัมน์ "จัดการ" ออกตามที่ขอ
+        tbody.innerHTML += `<tr><td>${displayDate}</td><td>${r.location || '-'}${auditIcon}</td><td class="${tInClass}">${r.timeIn || '-'}</td><td class="fw-medium">${tOut}</td><td class="fw-bold text-dark">${wHr}</td><td class="fw-bold text-primary">${oHr}</td><td>${statusBadge}</td></tr>`;
     });
 };
 
@@ -732,6 +730,7 @@ window.renderAdminUI = async () => {
 
             const u = window.allUsers.find(x => (x.uid || x.docId) === l.empID); 
             const displayType = l.type === 'other' ? `ลาอื่นๆ (${l.typeOther || '-'})` : leaveTypesTH[l.type];
+            
             const displaySubmit = window.formatDateShort(l.submittedDate, l.timestamp, l.startDate || l.date);
             const dStart = window.formatDateShort(l.startDate || l.date); 
             const dEnd = (l.endDate && l.endDate !== (l.startDate || l.date)) ? `<br>ถึง ${window.formatDateShort(l.endDate)}` : '';
@@ -834,7 +833,6 @@ window.renderEmployeeUI = async () => {
         document.getElementById('statAnnBal').innerText = balances.annual !== undefined ? balances.annual : 0; 
         document.getElementById('statAnnUsed').innerText = calcUsed(total.annual, balances.annual);
 
-        // 🌟 เพิ่มตัวเลขวันสุทธิใน Dropdown แบบมืออาชีพ
         const stdSelect = document.querySelector('#standardLeaveContainer select');
         if (stdSelect) {
             for(let opt of stdSelect.options) {
@@ -940,9 +938,9 @@ const initApp = () => {
             return;
         }
         
-        if (path.includes('employee.html')) { window.checkAuthStatus('employee'); refreshUI(); } 
-        else if (path.includes('manager.html')) { window.checkAuthStatus('leader'); refreshUI(); } 
-        else if (path.includes('admin.html')) { window.checkAuthStatus('admin'); refreshUI(); }
+        if (path.includes('employee.html')) { window.checkAuthStatus('employee'); window.renderEmployeeUI(); } 
+        else if (path.includes('manager.html')) { window.checkAuthStatus('leader'); window.renderManagerUI(); } 
+        else if (path.includes('admin.html')) { window.checkAuthStatus('admin'); window.renderAdminUI(); }
     }
 };
 

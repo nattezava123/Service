@@ -20,12 +20,10 @@
 body { font-family: 'Sarabun', sans-serif; background-color: var(--background); color: var(--text-main); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 h1, h2, h3, h4, h5, h6 { color: var(--text-dark); font-weight: 700; margin-bottom: 0.5rem; }
 
-/* Navbar */
 .navbar-custom { background-color: var(--surface) !important; border-bottom: 1px solid var(--border-light); padding: 0.8rem 0; box-shadow: var(--shadow-sm); }
 .navbar-brand { color: var(--primary) !important; font-weight: 700; font-size: 1.3rem; }
 
-/* Cards & Buttons */
-.card-custom { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 1.5rem; transition: box-shadow 0.2s ease; }
+.card-custom { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 1.5rem; transition: box-shadow 0.2s ease; height: 100%; }
 @media (min-width: 768px) { .card-custom { padding: 2rem; } }
 .card-custom:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
 
@@ -35,12 +33,10 @@ h1, h2, h3, h4, h5, h6 { color: var(--text-dark); font-weight: 700; margin-botto
 .btn-outline-primary { color: var(--primary); border-color: var(--primary); }
 .btn-outline-primary:hover { background-color: #eff6ff; color: var(--primary-hover); }
 
-/* Forms */
 .form-label { font-weight: 600; color: var(--text-dark); font-size: 0.9rem; margin-bottom: 0.3rem; }
 .form-control, .form-select { border-radius: var(--radius-sm); border: 1px solid var(--border-input); padding: 0.6rem 0.9rem; background-color: var(--surface); color: var(--text-dark); font-size: 0.95rem; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
 .form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); outline: none; }
 
-/* Tables */
 .table-responsive { border-radius: var(--radius-md); border: 1px solid var(--border-light); background: var(--surface); overflow-x: auto; }
 .table-custom { border-collapse: collapse; width: 100%; margin-bottom: 0; }
 .table-custom thead th { background-color: #f1f5f9; color: var(--text-dark); font-weight: 700; font-size: 0.9rem; padding: 1rem; border-bottom: 2px solid var(--border-light); white-space: nowrap; }
@@ -48,13 +44,11 @@ h1, h2, h3, h4, h5, h6 { color: var(--text-dark); font-weight: 700; margin-botto
 .table-custom tbody tr:hover { background-color: #f8fafc; }
 .table-custom tbody td { padding: 1rem; vertical-align: middle; color: var(--text-main); font-size: 0.95rem; white-space: nowrap; }
 
-/* 🌟 แก้ไข Tabs ให้สลับสีได้ถูกต้องและดูเป็นมืออาชีพ */
 .nav-pills { background-color: #f1f5f9 !important; padding: 0.35rem !important; border-radius: 99px !important; border: 1px solid var(--border-light) !important; display: inline-flex !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02) !important; }
 .nav-pills .nav-link { color: var(--text-muted) !important; font-weight: 600 !important; border-radius: 99px !important; padding: 0.6rem 1.5rem !important; margin: 0 !important; transition: all 0.3s ease !important; background: transparent !important; border: none !important; }
 .nav-pills .nav-link:hover { color: var(--text-dark) !important; }
 .nav-pills .nav-link.active { background-color: var(--surface) !important; color: var(--primary) !important; box-shadow: var(--shadow-sm) !important; }
 
-/* Components */
 .badge { font-weight: 600; padding: 0.5em 0.75em; border-radius: 6px; font-size: 0.8rem; }
 .bg-success-subtle { background-color: #dcfce7 !important; color: #166534 !important; border: 1px solid #bbf7d0; }
 .bg-danger-subtle { background-color: #fee2e2 !important; color: #991b1b !important; border: 1px solid #fecaca; }
@@ -63,21 +57,19 @@ h1, h2, h3, h4, h5, h6 { color: var(--text-dark); font-weight: 700; margin-botto
 .bg-info-subtle { background-color: #cffafe !important; color: #155e75 !important; border: 1px solid #a5f3fc; }
 .bg-secondary-subtle { background-color: #f1f5f9 !important; color: #475569 !important; border: 1px solid #e2e8f0; }
 
-.menu-btn-card { border: 1px solid var(--border-light); border-radius: var(--radius-md); background: var(--surface); cursor: pointer; transition: all 0.2s ease; }
-.menu-btn-card:hover { border-color: var(--primary); background-color: #eff6ff; }
-.icon-box { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 1.6rem; }
+.menu-btn-card { border: 1px solid var(--border-light); border-radius: var(--radius-md); background: var(--surface); cursor: pointer; transition: all 0.2s ease; height: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+.menu-btn-card:hover { border-color: var(--primary); background-color: #eff6ff; transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.icon-box { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 1.8rem; margin-bottom: 1rem; }
 
-/* Login Page */
 .login-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; background-color: var(--background); }
 .login-container { display: flex; background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border-light); overflow: hidden; width: 100%; max-width: 900px; min-height: 500px; }
 .login-left { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; padding: 4rem; width: 50%; display: flex; flex-direction: column; justify-content: center; position: relative; }
 .login-right { padding: 3rem 4rem; width: 50%; display: flex; flex-direction: column; justify-content: center; background-color: var(--surface); }
 @media (max-width: 768px) { .login-left { display: none; } .login-right { width: 100%; padding: 2.5rem; } }
 
-/* Utils */
 .spa-section { display: none; }
 .spa-section.active { display: block; animation: fadeIn 0.3s ease-out forwards; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: #f8fafc; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
