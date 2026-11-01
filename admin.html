@@ -41,8 +41,7 @@
         </div>
     </nav>
 
-    <!-- ขยาย Container เป็น fluid กว้างเต็มจอ 100% -->
-    <div class="container-fluid mt-4 mb-5 px-4 px-md-5">
+    <div class="container-fluid mt-4 mb-5 px-4 px-md-5" style="max-width: 1440px;">
         
         <div class="text-center mb-4">
             <ul class="nav nav-pills d-inline-flex bg-white shadow-sm p-2 rounded-pill gap-1 border" role="tablist">
@@ -56,31 +55,30 @@
         <div class="tab-content">
             <!-- ================= TAB 1: อนุมัติ (Approvals) ================= -->
             <div class="tab-pane fade show active" id="tab-approval">
-                <div class="row g-4">
-                    <div class="col-lg-7">
-                        <div class="card card-custom mb-4 border-0 shadow-sm h-100">
-                            <div class="card-header bg-transparent border-0 pt-4 pb-2 d-flex align-items-center"><h5 class="fw-bold text-dark mb-0 d-flex align-items-center"><div class="card-title-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-person-fill-exclamation fs-5"></i></div>รายการรอพิจารณาการลา (ระดับผู้จัดการ)</h5></div>
-                            <div class="card-body pt-2">
-                                <div class="table-responsive border-0 min-vh-25">
-                                    <table class="table table-custom text-center align-middle mb-0">
-                                        <thead><tr><th>ลำดับ</th><th>ชื่อพนักงาน</th><th>วันที่ยื่น</th><th>วันที่ลา</th><th>ประเภท</th><th>สถานะ</th><th>ตรวจสอบ</th></tr></thead>
-                                        <tbody id="adminApproveManagerTableBody"></tbody>
-                                    </table>
-                                </div>
-                            </div>
+                <div class="card card-custom mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-transparent border-0 pt-4 pb-2 d-flex align-items-center">
+                        <h5 class="fw-bold text-dark mb-0 d-flex align-items-center"><div class="card-title-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-person-fill-exclamation fs-5"></i></div>รายการรอพิจารณาการลา (ระดับผู้จัดการ)</h5>
+                    </div>
+                    <div class="card-body pt-2">
+                        <div class="table-responsive border-0 min-vh-25">
+                            <table class="table table-custom text-center align-middle mb-0">
+                                <thead><tr><th>ลำดับ</th><th>ชื่อพนักงาน</th><th>วันที่ยื่น</th><th>วันที่ลา</th><th>ประเภท</th><th>สถานะ</th><th>ตรวจสอบ</th></tr></thead>
+                                <tbody id="adminApproveManagerTableBody"></tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="col-lg-5">
-                        <div class="card card-custom border-0 shadow-sm h-100">
-                            <div class="card-header bg-transparent border-0 pt-4 pb-2 d-flex align-items-center"><h5 class="fw-bold text-dark mb-0 d-flex align-items-center"><div class="card-title-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-clock-history fs-5"></i></div>คำขอแก้ไขเวลาลงงาน (ระดับผู้จัดการ)</h5></div>
-                            <div class="card-body pt-2">
-                                <div class="table-responsive border-0 min-vh-25">
-                                    <table class="table table-custom text-center align-middle mb-0">
-                                        <thead><tr><th>ชื่อพนักงาน</th><th>วันที่</th><th>เวลาที่ขอแก้ไข</th><th>เหตุผล</th><th>จัดการ</th></tr></thead>
-                                        <tbody id="adminApproveTimeTableBody"></tbody>
-                                    </table>
-                                </div>
-                            </div>
+                </div>
+
+                <div class="card card-custom border-0 shadow-sm">
+                    <div class="card-header bg-transparent border-0 pt-4 pb-2 d-flex align-items-center">
+                        <h5 class="fw-bold text-dark mb-0 d-flex align-items-center"><div class="card-title-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-clock-history fs-5"></i></div>คำขอแก้ไขเวลาลงงาน (ระดับผู้จัดการ)</h5>
+                    </div>
+                    <div class="card-body pt-2">
+                        <div class="table-responsive border-0 min-vh-25">
+                            <table class="table table-custom text-center align-middle mb-0">
+                                <thead><tr><th>ชื่อพนักงาน</th><th>วันที่</th><th>เวลาเดิม</th><th>เวลาที่ขอแก้ไข</th><th>เหตุผล</th><th>จัดการ</th></tr></thead>
+                                <tbody id="adminApproveTimeTableBody"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -92,19 +90,23 @@
                     <div class="card-header bg-transparent border-0 pt-4 pb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
                         <h5 class="fw-bold text-dark mb-0 d-flex align-items-center"><div class="card-title-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-file-earmark-bar-graph fs-5"></i></div>รายงานประวัติการลาทั้งหมด</h5>
                         <div class="d-flex flex-wrap gap-2 align-items-center">
-                            <div class="input-group input-group-sm shadow-sm"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span><input type="text" id="searchReport" class="form-control border-start-0 ps-0" placeholder="ค้นหา ชื่อพนักงาน..." onkeyup="window.filterTable('searchReport', 'adminReportTableBody')" style="width: 150px;"></div>
-                            <div class="position-relative d-inline-block shadow-sm" style="width: 140px;">
-                                <input type="date" id="adminReportDateFilter" class="form-control form-control-sm" onchange="document.getElementById('adminReportDateDisplay').innerText = this.value ? window.formatDateShort(this.value) : 'เลือกวันที่...'; document.getElementById('adminReportDateDisplay').classList.remove('text-muted'); window.renderAdminUI();" style="opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2;">
-                                <div class="form-control form-control-sm bg-white d-flex align-items-center justify-content-between" style="position: relative; z-index: 1;"><span id="adminReportDateDisplay" class="text-muted text-truncate fw-medium">เลือกวันที่...</span><i class="bi bi-calendar3 text-muted"></i></div>
+                            <!-- 🌟 อัปเดตช่องค้นหาวันที่ในหน้า Report ของ Admin -->
+                            <div class="input-group input-group-sm shadow-sm">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" id="searchReport" class="form-control border-start-0 ps-0" placeholder="ค้นหา รหัส, ชื่อพนักงาน..." onkeyup="window.filterTable('searchReport', 'adminReportTableBody')" style="width: 150px;">
                             </div>
-                            <select id="adminFilterStatus" class="form-select form-select-sm shadow-sm fw-medium" style="width: 120px;" onchange="window.renderAdminUI()"><option value="all">สถานะทั้งหมด</option><option value="รอพิจารณา">รอพิจารณา</option><option value="อนุมัติ">อนุมัติ</option><option value="ไม่อนุมัติ">ไม่อนุมัติ</option><option value="ยกเลิก">ยกเลิกแล้ว</option></select>
+                            <input type="date" id="adminReportDateFilter" class="form-control form-control-sm shadow-sm" onchange="window.renderAdminUI()" style="width: 130px;">
+                            <select id="adminFilterStatus" class="form-select form-select-sm shadow-sm fw-medium" style="width: 120px; color: #475569;" onchange="window.renderAdminUI()">
+                                <option value="all">สถานะทั้งหมด</option><option value="รอพิจารณา">รอพิจารณา</option><option value="อนุมัติ">อนุมัติ</option><option value="ไม่อนุมัติ">ไม่อนุมัติ</option><option value="ยกเลิก">ยกเลิกแล้ว</option>
+                            </select>
                             <button class="btn btn-success btn-sm d-flex align-items-center rounded-pill px-3 shadow-sm fw-bold" onclick="window.exportAdminLeaveReport()"><i class="bi bi-file-earmark-excel me-1"></i> Export CSV</button>
-                            <button class="btn btn-light btn-sm border shadow-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 31px; height: 31px;" onclick="document.getElementById('searchReport').value=''; document.getElementById('adminReportDateFilter').value=''; document.getElementById('adminReportDateDisplay').innerText='เลือกวันที่...'; document.getElementById('adminReportDateDisplay').classList.add('text-muted'); document.getElementById('adminFilterStatus').value='all'; window.renderAdminUI();" title="ล้างค่า"><i class="bi bi-arrow-counterclockwise"></i></button>
+                            <button class="btn btn-light btn-sm border shadow-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 31px; height: 31px;" onclick="document.getElementById('searchReport').value=''; document.getElementById('adminReportDateFilter').value=''; document.getElementById('adminFilterStatus').value='all'; window.renderAdminUI();" title="ล้างค่า"><i class="bi bi-arrow-counterclockwise"></i></button>
                         </div>
                     </div>
                     <div class="card-body pt-0">
                         <div class="table-responsive border-0 min-vh-25">
                             <table class="table table-custom text-center align-middle mb-0">
+                                <!-- 🌟 อัปเดตตาราง: ตัดเอกสารออก, เพิ่มปุ่มตรวจสอบก่อนสถานะ -->
                                 <thead><tr><th>ลำดับ</th><th>รหัสพนักงาน</th><th>ชื่อพนักงาน</th><th>วันที่ยื่น</th><th>วันที่ลา</th><th>ประเภท</th><th>ตรวจสอบ</th><th>สถานะ</th></tr></thead>
                                 <tbody id="adminReportTableBody"></tbody>
                             </table>
@@ -116,27 +118,32 @@
             <!-- ================= TAB 3: จัดการพนักงาน ================= -->
             <div class="tab-pane fade" id="tab-manage">
                 <div class="row g-4">
-                    <div class="col-lg-3 col-md-5">
+                    <div class="col-lg-4 col-md-5">
                         <div class="card card-custom border-0 shadow-sm h-100 p-4">
-                            <div class="card-header bg-transparent border-0 p-0 mb-4 d-flex align-items-center"><h5 class="fw-bold text-dark mb-0 d-flex align-items-center"><div class="card-title-icon bg-success bg-opacity-10 text-success m-0 me-2"><i class="bi bi-person-plus-fill fs-5"></i></div>เพิ่มพนักงานใหม่</h5></div>
+                            <div class="card-header bg-transparent border-0 p-0 mb-4 d-flex align-items-center">
+                                <h5 class="fw-bold text-dark mb-0 d-flex align-items-center"><div class="card-title-icon bg-success bg-opacity-10 text-success m-0 me-2"><i class="bi bi-person-plus-fill fs-5"></i></div>เพิ่มพนักงานใหม่</h5>
+                            </div>
                             <div class="card-body p-0">
                                 <form id="addEmployeeForm" onsubmit="window.handleAddEmployee(event)">
-                                    <div class="mb-3"><label class="form-label fw-bold">รหัสพนักงาน</label><input type="text" class="form-control bg-light shadow-none" id="regId" placeholder="เช่น EMP001" required></div>
-                                    <div class="mb-1"><label class="form-label fw-bold">เลขบัตรประชาชน</label><input type="text" class="form-control bg-light shadow-none" id="regIdCard" placeholder="ระบุ 13 หลัก" maxlength="13" required></div>
-                                    <div class="form-text small text-muted mb-3"><i class="bi bi-info-circle me-1"></i>ใช้ 4 ตัวท้าย เป็นรหัสผ่านเริ่มต้น</div>
-                                    <div class="mb-3"><label class="form-label fw-bold">ชื่อ - นามสกุล</label><input type="text" class="form-control bg-light shadow-none" id="regName" placeholder="เช่น สมชาย ใจดี" required></div>
-                                    <div class="mb-4"><label class="form-label fw-bold">ระดับสิทธิ์การใช้งาน</label><select class="form-select bg-light shadow-none fw-medium text-dark" id="regRole"><option value="employee">Staff (พนักงานทั่วไป)</option><option value="leader">Manager (หัวหน้างาน)</option><option value="admin">Admin (ผู้ดูแลระบบ)</option></select></div>
+                                    <div class="mb-3"><label for="regId" class="form-label fw-bold">รหัสพนักงาน</label><input type="text" class="form-control bg-light shadow-none" id="regId" placeholder="เช่น EMP001" required></div>
+                                    <div class="mb-1"><label for="regIdCard" class="form-label fw-bold">เลขบัตรประชาชน</label><input type="text" class="form-control bg-light shadow-none" id="regIdCard" placeholder="ระบุ 13 หลัก" maxlength="13" required></div>
+                                    <div class="form-text small text-muted mb-3"><i class="bi bi-info-circle me-1"></i>ระบบจะใช้ 4 ตัวท้าย เป็นรหัสผ่านเริ่มต้น</div>
+                                    <div class="mb-3"><label for="regName" class="form-label fw-bold">ชื่อ - นามสกุล</label><input type="text" class="form-control bg-light shadow-none" id="regName" placeholder="เช่น สมชาย ใจดี" required></div>
+                                    <div class="mb-4"><label for="regRole" class="form-label fw-bold">ระดับสิทธิ์การใช้งาน</label><select class="form-select bg-light shadow-none fw-medium text-dark" id="regRole"><option value="employee">Staff (พนักงานทั่วไป)</option><option value="leader">Manager (หัวหน้างาน)</option><option value="admin">Admin (ผู้ดูแลระบบ)</option></select></div>
                                     <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm mt-2"><i class="bi bi-plus-circle me-1"></i> สร้างบัญชีผู้ใช้</button>
                                 </form>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-9 col-md-7">
+                    <div class="col-lg-8 col-md-7">
                         <div class="card card-custom border-0 shadow-sm h-100 p-4">
                             <div class="card-header bg-transparent border-0 p-0 mb-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
                                 <h5 class="fw-bold text-dark mb-0 d-flex align-items-center"><div class="card-title-icon bg-primary bg-opacity-10 text-primary m-0 me-2"><i class="bi bi-people-fill fs-5"></i></div>รายชื่อพนักงานในระบบ</h5>
-                                <div class="d-flex flex-wrap gap-2"><div class="input-group input-group-sm shadow-sm" style="width: 250px;"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span><input type="text" id="searchEmp" class="form-control border-start-0 ps-0" placeholder="ค้นหารหัส, ชื่อพนักงาน..." onkeyup="window.filterTable('searchEmp', 'adminEmployeeTableBody')"></div></div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <div class="input-group input-group-sm shadow-sm" style="width: 230px;"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span><input type="text" id="searchEmp" class="form-control border-start-0 ps-0" placeholder="ค้นหารหัส, ชื่อพนักงาน..." onkeyup="window.filterTable('searchEmp', 'adminEmployeeTableBody')"></div>
+                                    <!-- 🌟 นำปุ่ม Export ออกตามความต้องการ -->
+                                </div>
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive border-0 min-vh-25">
