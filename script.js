@@ -34,6 +34,7 @@ window.calculateHRWorkHours = (timeInStr, timeOutStr) => {
     if (!timeInStr || !timeOutStr || timeInStr === '-' || timeOutStr === '-') {
         return { normal: 0, ot: 0 };
     }
+    
     try {
         const [inH, inM] = timeInStr.split(':').map(Number);
         const [outH, outM] = timeOutStr.split(':').map(Number);
@@ -620,17 +621,8 @@ window.renderTimeHistoryPage = (page = null) => {
 
         const displayDate = window.formatDateShort(r.workDate, r.timestamp);
 
-        // 🌟 ลบคอลัมน์ "จัดการ" ออกตามที่ขอ
         tbody.innerHTML += `<tr><td>${displayDate}</td><td>${r.location || '-'}${auditIcon}</td><td class="${tInClass}">${r.timeIn || '-'}</td><td class="fw-medium">${tOut}</td><td class="fw-bold text-dark">${wHr}</td><td class="fw-bold text-primary">${oHr}</td><td>${statusBadge}</td></tr>`;
     });
-};
-
-window.changeTimePage = (step) => { window.currentTimePage += step; window.renderTimeHistoryPage(); };
-
-window.viewWorkDetails = (id) => {
-    const r = window.allTimeRecords.find(x => x.id === id); if(!r) return;
-    const displayDate = window.formatDateFull(r.workDate, r.timestamp);
-    Swal.fire({ title: `รายละเอียดงาน<br><span class="fs-6 text-muted">${displayDate}</span>`, html: `<div class="text-start bg-light p-3 rounded border"><b>สถานที่:</b> <span class="text-primary">${r.location}</span><br><b>เวลาทำงาน:</b> ${r.timeIn} - ${r.timeOut || 'ยังไม่ออกงาน'}<br><hr><b>เนื้องานที่บันทึก:</b><br>${r.details || '<span class="text-muted">ไม่มีรายละเอียด</span>'}</div>`, confirmButtonText: 'ปิดหน้าต่าง', confirmButtonColor: '#2563eb' });
 };
 
 window.requestTimeCorrection = (id, date, curIn, curOut) => {
@@ -879,6 +871,8 @@ window.renderEmployeeUI = async () => {
     }
 
     const todayStr = getSafeTodayString();
+    
+    // 🌟 ระบบอัปเดตเวลาเรียลไทม์ที่ถูกต้อง (เพิ่มบรรทัดนี้แล้วนาฬิกาหน้าแรกจะติด)
     if(document.getElementById('empCurrentDateDisplay')) {
         document.getElementById('empCurrentDateDisplay').innerText = window.formatDateFull(todayStr);
     }
@@ -923,6 +917,16 @@ const startRealtimeClock = () => {
     if(clockEl) {
         clockEl.innerText = new Date().toLocaleTimeString('th-TH', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
     }
+    
+    // 🌟 ให้นาฬิกาหน้าล็อกอินเดินด้วย (ตามคำขอ)
+    const loginClockEl = document.getElementById('loginClock');
+    if(loginClockEl) {
+        loginClockEl.innerText = new Date().toLocaleTimeString('th-TH', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+        const loginDateEl = document.getElementById('loginDate');
+        if(loginDateEl && loginDateEl.innerText === 'กำลังโหลดวันที่...') {
+            loginDateEl.innerText = window.formatDateFull(getSafeTodayString());
+        }
+    }
 };
 startRealtimeClock(); 
 setInterval(startRealtimeClock, 1000);
@@ -938,9 +942,9 @@ const initApp = () => {
             return;
         }
         
-        if (path.includes('employee.html')) { window.checkAuthStatus('employee'); window.renderEmployeeUI(); } 
-        else if (path.includes('manager.html')) { window.checkAuthStatus('leader'); window.renderManagerUI(); } 
-        else if (path.includes('admin.html')) { window.checkAuthStatus('admin'); window.renderAdminUI(); }
+        if (path.includes('employee.html')) { window.checkAuthStatus('employee'); refreshUI(); } 
+        else if (path.includes('manager.html')) { window.checkAuthStatus('leader'); refreshUI(); } 
+        else if (path.includes('admin.html')) { window.checkAuthStatus('admin'); refreshUI(); }
     }
 };
 
